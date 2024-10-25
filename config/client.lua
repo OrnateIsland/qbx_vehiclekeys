@@ -40,9 +40,9 @@ local defaultHoldupAnim = { dict = 'mp_am_hold_up', clip = 'holdup_victim_20s' }
 return {
     vehicleMaximumLockingDistance = 5.0, -- Minimum distance for vehicle locking
 
-    getKeysWhenEngineIsRunning = true, -- when enabled, gives keys to a player who doesn't have them if they enter the driver seat when the engine is running
+    getKeysWhenEngineIsRunning = true,   -- when enabled, gives keys to a player who doesn't have them if they enter the driver seat when the engine is running
 
-    keepEngineOnWhenAbandoned = true, -- when enabled, keeps a vehicle's engine running after exiting
+    keepEngineOnWhenAbandoned = true,    -- when enabled, keeps a vehicle's engine running after exiting
 
     -- Carjack Settings
     carjackEnable = true,                -- Enables the ability to carjack pedestrian vehicles, stealing them by pointing a weapon at them
@@ -132,7 +132,7 @@ return {
                 [VehicleClass.PLANES]          = normalLockpickSkillCheck,
                 [VehicleClass.SERVICE]         = normalLockpickSkillCheck,
                 [VehicleClass.EMERGENCY]       = hardLockpickSkillCheck,
-                [VehicleClass.MILITARY]        = {},                          -- The vehicle class can only be opened with an advanced lockpick
+                [VehicleClass.MILITARY]        = {}, -- The vehicle class can only be opened with an advanced lockpick
                 [VehicleClass.COMMERCIAL]      = normalLockpickSkillCheck,
                 [VehicleClass.TRAINS]          = {},
                 [VehicleClass.OPEN_WHEEL]      = easyLockpickSkillCheck,
@@ -164,7 +164,7 @@ return {
                 [VehicleClass.EMERGENCY]       = easyLockpickSkillCheck,
                 [VehicleClass.MILITARY]        = hardLockpickSkillCheck,
                 [VehicleClass.COMMERCIAL]      = easyLockpickSkillCheck,
-                [VehicleClass.TRAINS]          = {},                         -- The vehicle class can't be opened with an lockpick
+                [VehicleClass.TRAINS]          = {}, -- The vehicle class can't be opened with an lockpick
                 [VehicleClass.OPEN_WHEEL]      = easyLockpickSkillCheck,
             },
             model = {
@@ -224,7 +224,7 @@ return {
                 [VehicleClass.EMERGENCY]       = easyLockpickSkillCheck,
                 [VehicleClass.MILITARY]        = hardLockpickSkillCheck,
                 [VehicleClass.COMMERCIAL]      = easyLockpickSkillCheck,
-                [VehicleClass.TRAINS]          = {},                         -- The vehicle class can't be hotwired
+                [VehicleClass.TRAINS]          = {}, -- The vehicle class can't be hotwired
                 [VehicleClass.OPEN_WHEEL]      = easyLockpickSkillCheck,
             },
             model = {
