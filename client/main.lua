@@ -5,6 +5,7 @@
 local config = require 'config.client'
 local sharedFunctions = require 'shared.functions'
 
+local getIsVehicleInitiallyLocked = sharedFunctions.getIsVehicleInitiallyLocked
 local getIsVehicleShared = sharedFunctions.getIsVehicleShared
 local getIsVehicleAlwaysUnlocked = sharedFunctions.getIsVehicleAlwaysUnlocked
 local getIsVehicleCarjackingImmune = sharedFunctions.getIsVehicleCarjackingImmune
@@ -23,6 +24,11 @@ local function setVehicleDoorLock(vehicle, state, anim)
         if anim then
             lib.requestModel(`p_car_keys_01`)
             local key = CreateObject(`p_car_keys_01`, GetEntityCoords(cache.ped), false, false, false)
+<<<<<<< HEAD
+=======
+            lib.playAnim(cache.ped, 'anim@mp_player_intmenu@key_fob@', 'fob_click', 3.0, 3.0, -1, 49)
+
+>>>>>>> f7000f6ef0f663d8b4981283081d7985c766ad36
             SetEntityCollision(key, false, false)
             AttachEntityToEntity(key, cache.ped, GetPedBoneIndex(cache.ped, 57005), 0.10, 0.02, 0, 48.10, 23.14, 24.14,
                 true, true, false, true, 1, true)
@@ -164,7 +170,7 @@ end
 EngineBind = lib.addKeybind({
     name = 'engineToggle',
     description = locale('info.engine'),
-    defaultKey = 'RSHIFT',
+    defaultKey = config.keySearchBind,
     onPressed = function()
         if cache.seat == -1 then
             EngineBind:disable(true)
@@ -190,15 +196,15 @@ RegisterNetEvent('QBCore:Client:VehicleInfo', function(data)
     if driver ~= 0 and IsEntityDead(driver) and not (isVehicleImmune or IsPedAPlayer(driver)) then
         TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', data.netId, 1)
         if lib.progressCircle({
-                duration = 2500,
-                label = locale('progress.takekeys'),
-                position = 'bottom',
-                useWhileDead = false,
-                canCancel = true,
-                disable = {
-                    car = true,
-                },
-            }) then
+            duration = 2500,
+            label = locale('progress.takekeys'),
+            position = 'bottom',
+            useWhileDead = false,
+            canCancel = true,
+            disable = {
+                car = true,
+            },
+        }) then
             TriggerServerEvent('qbx_vehiclekeys:server:tookKeys', VehToNet(data.vehicle))
         end
     end
@@ -254,4 +260,42 @@ AddEventHandler('onResourceStart', function(resourceName)
     if cache.seat == -1 then
         onEnteringDriverSeat()
     end
+end)
+
+local function onVehicleAttemptToEnter(vehicle)
+    if Entity(vehicle).state.doorslockstate then return end
+
+    local ped = GetPedInVehicleSeat(vehicle, -1)
+    if IsPedAPlayer(ped) then return end
+
+    local isLocked = not getIsVehicleAlwaysUnlocked(vehicle) and getIsVehicleInitiallyLocked(vehicle, ped and ped ~= 0)
+    local lockState = isLocked and 2 or 1
+    SetVehicleDoorsLocked(vehicle, lockState)
+    TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', NetworkGetNetworkIdFromEntity(vehicle), lockState)
+end
+
+local isLoggedIn = false
+
+local function playerEnterVehLoop()
+    CreateThread(function()
+        while isLoggedIn do
+            local vehicle = GetVehiclePedIsTryingToEnter(cache.ped)
+            if vehicle ~= 0 then
+                onVehicleAttemptToEnter(vehicle)
+            end
+            Wait(100)
+        end
+    end)
+end
+
+CreateThread(function()
+    if LocalPlayer.state.isLoggedIn then
+        playerEnterVehLoop()
+    end
+end)
+
+AddStateBagChangeHandler('isLoggedIn', ('player:%s'):format(cache.serverId), function(_, _, value)
+    isLoggedIn = value
+    if not value then return end
+    playerEnterVehLoop()
 end)
