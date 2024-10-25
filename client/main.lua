@@ -24,11 +24,8 @@ local function setVehicleDoorLock(vehicle, state, anim)
         if anim then
             lib.requestModel(`p_car_keys_01`)
             local key = CreateObject(`p_car_keys_01`, GetEntityCoords(cache.ped), false, false, false)
-<<<<<<< HEAD
-=======
             lib.playAnim(cache.ped, 'anim@mp_player_intmenu@key_fob@', 'fob_click', 3.0, 3.0, -1, 49)
 
->>>>>>> f7000f6ef0f663d8b4981283081d7985c766ad36
             SetEntityCollision(key, false, false)
             AttachEntityToEntity(key, cache.ped, GetPedBoneIndex(cache.ped, 57005), 0.10, 0.02, 0, 48.10, 23.14, 24.14,
                 true, true, false, true, 1, true)
@@ -170,7 +167,7 @@ end
 EngineBind = lib.addKeybind({
     name = 'engineToggle',
     description = locale('info.engine'),
-    defaultKey = config.keySearchBind,
+    defaultKey = 'RSHIFT',
     onPressed = function()
         if cache.seat == -1 then
             EngineBind:disable(true)
@@ -196,15 +193,15 @@ RegisterNetEvent('QBCore:Client:VehicleInfo', function(data)
     if driver ~= 0 and IsEntityDead(driver) and not (isVehicleImmune or IsPedAPlayer(driver)) then
         TriggerServerEvent('qb-vehiclekeys:server:setVehLockState', data.netId, 1)
         if lib.progressCircle({
-            duration = 2500,
-            label = locale('progress.takekeys'),
-            position = 'bottom',
-            useWhileDead = false,
-            canCancel = true,
-            disable = {
-                car = true,
-            },
-        }) then
+                duration = 2500,
+                label = locale('progress.takekeys'),
+                position = 'bottom',
+                useWhileDead = false,
+                canCancel = true,
+                disable = {
+                    car = true,
+                },
+            }) then
             TriggerServerEvent('qbx_vehiclekeys:server:tookKeys', VehToNet(data.vehicle))
         end
     end
