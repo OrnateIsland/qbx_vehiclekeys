@@ -2,46 +2,46 @@
 
 ---Arguments of https://overextended.dev/ox_lib/Modules/Interface/Client/skillcheck
 ---@class SkillCheckConfig
----@field difficulty Difficulty[]
----@field inputs? string[]
+---@field iterations? number
+---@field difficulty number
 
 ---@type SkillCheckConfig
 local easyLockpickSkillCheck = {
-    difficulty = { 'easy', 'easy', { areaSize = 60, speedMultiplier = 1 }, 'medium' },
-    inputs = { '1', '2', '3' }
+    iterations = math.random(3, 4),
+    difficulty = math.random(30, 50),
 }
 
 ---@type SkillCheckConfig
 local normalLockpickSkillCheck = {
-    difficulty = { 'easy', 'easy', { areaSize = 60, speedMultiplier = 1 }, 'medium' },
-    inputs = { '1', '2', '3', '4' }
+    iterations = math.random(4, 6),
+    difficulty = math.random(40, 60),
 }
 
 ---@type SkillCheckConfig
 local hardLockpickSkillCheck = {
-    difficulty = { 'easy', 'easy', { areaSize = 60, speedMultiplier = 2 }, 'medium' },
-    inputs = { '1', '2', '3', '4' }
+    iterations = math.random(4, 7),
+    difficulty = math.random(50, 70),
 }
 
 return {
     vehicleMaximumLockingDistance = 5.0, -- Minimum distance for vehicle locking
-    getKeysWhenEngineIsRunning = true, -- when enabled, gives keys to a player who doesn't have them if they enter the driver seat when the engine is running
-    keepEngineOnWhenAbandoned = true, -- when enabled, keeps a vehicle's engine running after exiting
+    getKeysWhenEngineIsRunning = true,   -- when enabled, gives keys to a player who doesn't have them if they enter the driver seat when the engine is running
+    keepEngineOnWhenAbandoned = true,    -- when enabled, keeps a vehicle's engine running after exiting
 
     -- Carjack Settings
-    carjackEnable = true,                -- Enables the ability to carjack pedestrian vehicles, stealing them by pointing a weapon at them
-    carjackingTimeInMs = 7500,           -- Time it takes to successfully carjack in miliseconds
-    delayBetweenCarjackingsInMs = 10000, -- Time before you can attempt another carjack in miliseconds
+    carjackEnable = true,                          -- Enables the ability to carjack pedestrian vehicles, stealing them by pointing a weapon at them
+    carjackingTimeInMs = math.random(7500, 10000), -- Time it takes to successfully carjack in miliseconds
+    delayBetweenCarjackingsInMs = 15000,           -- Time before you can attempt another carjack in miliseconds
 
     -- Hotwire Settings
     timeBetweenHotwires = 5000, -- Time in milliseconds between hotwire attempts
-    minKeysSearchTime = 20000,  -- Minimum hotwire time in milliseconds
-    maxKeysSearchTime = 40000,  -- Maximum hotwire time in milliseconds
+    minKeysSearchTime = 18000,  -- Minimum hotwire time in milliseconds
+    maxKeysSearchTime = 33000,  -- Maximum hotwire time in milliseconds
 
     -- Police Alert Settings
-    alertCooldown = 10000,         -- Cooldown period in milliseconds (10 seconds)
-    policeAlertChance = 0.75,      -- Chance of alerting the police during the day
-    policeNightAlertChance = 0.50, -- Chance of alerting the police at night (times: 01-06)
+    alertCooldown = 10000,        -- Cooldown period in milliseconds (10 seconds)
+    policeAlertChance = 0.7,      -- Chance of alerting the police during the day
+    policeNightAlertChance = 0.4, -- Chance of alerting the police at night (times: 01-06)
     policeAlertNightStartHour = 1,
     policeAlertNightDuration = 5,
 
@@ -52,7 +52,7 @@ return {
         TriggerServerEvent('police:server:policeAlert', locale("info.vehicle_theft") .. crime)
     end,
 
-    vehicleAlarmDuration = 10000,
+    vehicleAlarmDuration = 30000,
     lockpickCooldown = 1000,
     hotwireCooldown = 1000,
 
@@ -111,7 +111,7 @@ return {
                 [VehicleClass.HELICOPTERS] = hardLockpickSkillCheck,
                 [VehicleClass.EMERGENCY] = hardLockpickSkillCheck,
                 [VehicleClass.MILITARY] = {}, -- cannot be lockpicked
-                [VehicleClass.TRAINS] = {}, -- cannot be lockpicked
+                [VehicleClass.TRAINS] = {},   -- cannot be lockpicked
                 [VehicleClass.OPEN_WHEEL] = easyLockpickSkillCheck,
             },
             model = {}
@@ -123,7 +123,7 @@ return {
                 [VehicleClass.HELICOPTERS] = hardLockpickSkillCheck,
                 [VehicleClass.EMERGENCY] = hardLockpickSkillCheck,
                 [VehicleClass.MILITARY] = {}, -- cannot be lockpicked
-                [VehicleClass.TRAINS] = {}, -- cannot be lockpicked
+                [VehicleClass.TRAINS] = {},   -- cannot be lockpicked
             },
             model = {}
         },
@@ -134,7 +134,7 @@ return {
                 [VehicleClass.HELICOPTERS] = hardLockpickSkillCheck,
                 [VehicleClass.EMERGENCY] = hardLockpickSkillCheck,
                 [VehicleClass.MILITARY] = {}, -- cannot be hotwired
-                [VehicleClass.TRAINS] = {}, -- cannot be hotwired
+                [VehicleClass.TRAINS] = {},   -- cannot be hotwired
                 [VehicleClass.OPEN_WHEEL] = easyLockpickSkillCheck,
             },
             model = {}
@@ -146,7 +146,7 @@ return {
                 [VehicleClass.HELICOPTERS] = hardLockpickSkillCheck,
                 [VehicleClass.EMERGENCY] = hardLockpickSkillCheck,
                 [VehicleClass.MILITARY] = {}, -- cannot be hotwired
-                [VehicleClass.TRAINS] = {}, -- cannot be hotwired
+                [VehicleClass.TRAINS] = {},   -- cannot be hotwired
             },
             model = {}
         }

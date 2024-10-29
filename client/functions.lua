@@ -10,7 +10,8 @@ function AreKeysJobShared(vehicle)
     if not jobInfo or (jobInfo.requireOnDuty and not QBX.PlayerData.job.onduty) then return end
 
     assert(jobInfo.vehicles, string.format('Vehicles not configured for the %s job.', job))
-    return jobInfo.vehicles and jobInfo.vehicles[GetEntityModel(vehicle)] or jobInfo.classes and jobInfo.classes[GetVehicleClass(vehicle)]
+    return jobInfo.vehicles and jobInfo.vehicles[GetEntityModel(vehicle)] or
+        jobInfo.classes and jobInfo.classes[GetVehicleClass(vehicle)]
 end
 
 ---Checks if player has vehicle keys
@@ -91,7 +92,7 @@ local function getIsCloseToAnyBone(coords, entity, bones, maxDistance)
     end
 end
 
-local doorBones = {'door_dside_f', 'door_dside_r', 'door_pside_f', 'door_pside_r'}
+local doorBones = { 'door_dside_f', 'door_dside_r', 'door_pside_f', 'door_pside_r' }
 
 ---Checking whether the character is close enough to the vehicle driver door.
 ---@param vehicle number The entity number of the vehicle.
@@ -167,13 +168,29 @@ function LockpickDoor(isAdvancedLockedpick, maxDistance, customChallenge)
 
     local isDriverSeatFree = IsVehicleSeatFree(vehicle, -1)
 
-    if GetVehicleDoorLockStatus(vehicle) < 2 then exports.qbx_core:Notify(locale('notify.vehicle_is_unlocked'), 'error') return end
+    if GetVehicleDoorLockStatus(vehicle) < 2 then
+        exports.qbx_core:Notify(locale('notify.vehicle_is_unlocked'), 'error')
+        return
+    end
+
+    local boostingInfo = Entity(vehicle).state.boostingData
+    if boostingInfo ~= nil and ((not boostingInfo.groupIdentifiers and boostingInfo.cid ~= QBX.PlayerData.citizenid) or (boostingInfo.groupIdentifiers and not boostingInfo.groupIdentifiers[QBX.PlayerData.citizenid])) then
+        exports.qbx_core:Notify('This vehicle is not meant for you!', 'error')
+        return
+    end
+
+    if boostingInfo ~= nil and boostingInfo.advancedSystem then
+        exports.qbx_core:Notify('This vehicle needs to be electronically unlocked!', 'error')
+        return
+    end
 
     --- player may attempt to open the lock if:
-    if not isDriverSeatFree -- no one in the driver's seat
+    if not isDriverSeatFree                                                    -- no one in the driver's seat
         or not getIsCloseToAnyBone(pedCoords, vehicle, doorBones, maxDistance) -- the player's ped is close enough to the driver's door
         or GetVehicleConfig(vehicle).lockpickImmune
-    then return end
+    then
+        return
+    end
 
     local skillCheckConfig = config.skillCheck[isAdvancedLockedpick and 'advancedLockpick' or 'lockpick']
 
@@ -183,14 +200,16 @@ function LockpickDoor(isAdvancedLockedpick, maxDistance, customChallenge)
     if not next(skillCheckConfig) then return end
 
     if islockpickingProcessLocked then return end -- start of the critical section
-    islockpickingProcessLocked = true -- one call per player at a time
+    islockpickingProcessLocked = true             -- one call per player at a time
 
     CreateThread(function()
         local anim = config.anims.lockpick.model[GetEntityModel(vehicle)]
             or config.anims.lockpick.class[GetVehicleClass(vehicle)]
             or config.anims.lockpick.default
         lib.playAnim(cache.ped, anim.dict, anim.clip, 3.0, 3.0, -1, 16, 0, false, false, false) -- lock opening animation
-        local isSuccess = customChallenge or lib.skillCheck(skillCheckConfig.difficulty, skillCheckConfig.inputs)
+        -- local isSuccess = customChallenge or lib.skillCheck(skillCheckConfig.difficulty, skillCheckConfig.iterations)
+        local isSuccess = customChallenge or
+            exports.bl_ui:CircleProgress(skillCheckConfig.iterations, skillCheckConfig.difficulty)
 
         if getIsVehicleInRange(vehicle, maxDistance) then -- the action will be aborted if the opened vehicle is too far.
             lockpickCallback(vehicle, isAdvancedLockedpick, isSuccess)
@@ -237,15 +256,23 @@ function Hotwire(vehicle, isAdvancedLockedpick, customChallenge)
         or skillCheckConfig.default
     if not next(skillCheckConfig) then return end
 
+    local boostingInfo = Entity(vehicle).state.boostingData
+    if boostingInfo ~= nil and boostingInfo.advancedSystem then
+        exports.qbx_core:Notify('This vehicle needs to be electronically started!', 'error')
+        return
+    end
+
     if isHotwiringProcessLocked then return end -- start of the critical section
-    isHotwiringProcessLocked = true -- one call per player at a time
+    isHotwiringProcessLocked = true             -- one call per player at a time
 
     CreateThread(function()
         local anim = config.anims.hotwire.model[GetEntityModel(vehicle)]
-        or config.anims.hotwire.class[GetVehicleClass(vehicle)]
-        or config.anims.hotwire.default
+            or config.anims.hotwire.class[GetVehicleClass(vehicle)]
+            or config.anims.hotwire.default
         lib.playAnim(cache.ped, anim.dict, anim.clip, 3.0, 3.0, -1, 16, 0, false, false, false) -- lock opening animation
-        local isSuccess = customChallenge or lib.skillCheck(skillCheckConfig.difficulty, skillCheckConfig.inputs)
+        -- local isSuccess = customChallenge or lib.skillCheck(skillCheckConfig.difficulty, skillCheckConfig.iterations)
+        local isSuccess = customChallenge or
+            exports.bl_ui:CircleProgress(skillCheckConfig.iterations, skillCheckConfig.difficulty)
 
         hotwireCallback(vehicle, isAdvancedLockedpick, isSuccess)
 
