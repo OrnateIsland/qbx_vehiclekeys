@@ -76,18 +76,19 @@ local function carjackVehicle(driver, vehicle)
     end)
 
     if lib.progressCircle({
-        duration = config.carjackingTimeInMs,
-        label = locale('progress.attempting_carjack'),
-        position = 'bottom',
-        useWhileDead = false,
-        canCancel = true,
-        disable = {
-            car = true,
-        },
-    }) then
+            duration = config.carjackingTimeInMs,
+            label = locale('progress.attempting_carjack'),
+            position = 'bottom',
+            useWhileDead = false,
+            canCancel = true,
+            disable = {
+                car = true,
+            },
+        }) then
         if cache.weapon and isCarjacking then
             isCarjacking = false -- make this false to stop TaskVehicleTempAction from preventing ped to leave the car
-            local success = lib.callback.await('qbx_vehiclekeys:server:carjack', false, VehToNet(vehicle), GetWeapontypeGroup(cache.weapon))
+            local success = lib.callback.await('qbx_vehiclekeys:server:carjack', false, VehToNet(vehicle),
+                GetWeapontypeGroup(cache.weapon))
             if success then
                 onCarjackSuccess(occupants, vehicle)
             else

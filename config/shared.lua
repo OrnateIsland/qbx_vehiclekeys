@@ -60,7 +60,7 @@ return {
 			[`17mov_tug`] = {
 				noLock = true,
 				shared = true,
-				spawnLockedIfParked = 0.5
+				spawnLockedIfParked = 0.0
 			}
 		}
 	},
