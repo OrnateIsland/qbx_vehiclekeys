@@ -7,20 +7,20 @@
 
 ---@type SkillCheckConfig
 local easyLockpickSkillCheck = {
-	iterations = math.random(3, 4),
-	difficulty = math.random(55, 75),
+	iterations = math.random(3, 5),
+	difficulty = math.random(50, 65),
 }
 
 ---@type SkillCheckConfig
 local normalLockpickSkillCheck = {
 	iterations = math.random(4, 6),
-	difficulty = math.random(70, 75),
+	difficulty = math.random(65, 75),
 }
 
 ---@type SkillCheckConfig
 local hardLockpickSkillCheck = {
 	iterations = math.random(4, 7),
-	difficulty = math.random(75, 90),
+	difficulty = math.random(75, 85),
 }
 
 return {
